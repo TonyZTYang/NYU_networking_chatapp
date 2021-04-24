@@ -8,35 +8,86 @@
     <title>Zetong's chat app</title>
 
     <link rel="stylesheet" href="bootstrap.css">
-
-    <style>
-        #active-users-list {
-            height: 700px;
-            max-height: 700px;
-            overflow-y: scroll;
-        }
-
-
-        #message-list {
-            height: 700px;
-            max-height: 700px;
-            overflow-y: scroll;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <div id="app">
     <div class="container">
-        <div class="row">
+        <div v-show="!loggedIn" class="card" id="signIn-box">
+            <div class="input-group">
+                <input v-model="messageInput" type="text" class="form-control"
+                    placeholder="Enter Username"/>
+                <span class="input-group-btn">
+                    <button @click="sendMessage" class="btn btn-info" type="button">SIGN IN</button>
+                </span>
+            </div>
+        </div>
+
+        <div v-show="loggedIn" class="row">
             <!-- user list -->
-            <div class="col-4 m-2">
-                
+            <div v-cloak class="col-4 m-2">
+                <div class="card">
+                    <div class="card-header text-center">Active Users</div>
+                    <ul class="list-group list-group-flush pre-scrollable" id="user-box">
+                        <!-- display myself first if logged in -->
+                        <li class="list-group-item">
+                            <div style="color: chartreuse;">{{myId}}</div>
+                        </li>
+                        <!-- other users -->
+                        <li v-for="user in activeUsers" class="list-group-item">
+                            <div>{{user.name}}</div>
+                            <div class="text-right"><a @click="changeRoom(user.name)" href="#" class="card-link">@Room
+                                    #{{user.roomNumber}}</a></div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- chat interface -->
+            <div v-cloak v-show="loggedIn" class="col m-2">
+                <!-- message display interface -->
+                <div class="card mb-3" style="height:100%;">
+                    <div class="card-header text-center text-primary">Room: {{myRoom}}</div>
+                    <div v-if="loggedIn" class="card-header text-center text-muted">{{peopleInYourRoom}}</div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush pre-scrollable m-0" id="message-list">
+                            <!-- message -->
+                            <li v-for="msg in messages" class="list-group-item">
+                                <div class="row">
+                                    <div class="col text-primary">{{msg.name}}</div>
+                                    <div class="col text-right text-muted">{{msg.time}}</div>
+                                </div>
+                                <div>{{msg.content}}</div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- input box -->
+                    <div class="card-footer">
+                        <div class="input-group">
+                            <input v-model="messageInput" type="text" class="form-control"
+                                placeholder="Enter Message" />
+                            <span class="input-group-btn">
+                                <button @click="sendMessage" class="btn btn-info" type="button">SEND</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-</body>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script> -->
 <script src="vue.js"></script>
-<script src="main.js"></script>
+<script src="script.js"></script>
+<!-- <script>
+var app = new Vue({
+  el: '#app',
+  data: {
+    loggedIn: true,
+    myId: "hey"
+  }
+})
+</script> -->
 </html>
