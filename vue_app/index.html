@@ -20,7 +20,7 @@
                     <input v-model="loginInput" type="text" class="form-control"
                         placeholder="Enter Username"/>
                     <span class="input-group-btn">
-                        <button @click="login" class="btn btn-info" type="button">SIGN IN</button>
+                        <button @click="login" class="btn btn-primary" type="button">SIGN IN</button>
                     </span>
                 </div>
                 <div style="color: red;">{{loginAlert}}</div>
@@ -34,13 +34,13 @@
                         <ul class="list-group list-group-flush  pre-scrollable" id="user-box">
                             <!-- display myself first if logged in -->
                             <li class="list-group-item">
-                                <div style="color: rgb(65, 124, 6);">{{myId}}</div>
+                                <div style="color: rgb(65, 124, 6);">{{myId}} @{{myRoom}}</div>
                                 <!-- <div class="text-end"><a @click="" href="#" class="card-link">@ {{myRoom}}</a></div> -->
                                 <div class="text-end"><button @click="logout" type="button" class="btn btn-secondary btn-sm">LOGOUT</button></div>
                             </li>
                             <!-- other users -->
                             <li v-for="user in activeUsers" class="list-group-item">
-                                <div class="text-muted">{{user.name}} @ {{user.roomNumber}}</div>
+                                <div class="text-muted">{{user.name}} @{{user.roomNumber}}</div>
                                 <div class="text-end"><button @click="makeUserRoomChange(user.name)" class="btn btn-primary btn-sm">JOIN
                                         </button></div>
                             </li>
@@ -49,13 +49,12 @@
                 </div>
 
                 <!-- chat interface -->
-                <!-- <div v-show="loggedIn" class="col m-2"> -->
+                <div v-show="loggedIn" class="col m-2">
                     <!-- message display interface -->
-                    <!-- <div class="card mb-3" style="height:100%;">
+                    <div class="card mb-3" style="height:100%;">
                         <div class="card-header text-center text-primary">Room: {{myRoom}}</div>
-                        <div class="card-header text-center text-muted">{{peopleInYourRoom}}</div>
                         <div class="card-body">
-                            <ul class="list-group list-group-flush pre-scrollable m-0" id="message-list"> -->
+                            <ul class="list-group list-group-flush pre-scrollable m-0" id="message-list">
                                 <!-- message -->
                                 <!-- <li v-for="msg in messages" class="list-group-item">
                                     <div class="row">
@@ -63,9 +62,9 @@
                                         <div class="col text-right text-muted">{{msg.time}}</div>
                                     </div>
                                     <div>{{msg.content}}</div>
-                                </li>
+                                </li> -->
                             </ul>
-                        </div> -->
+                        </div>
                         <!-- input box -->
                         <!-- <div class="card-footer">
                             <div class="input-group">
@@ -75,9 +74,9 @@
                                     <button @click="sendMessage" class="btn btn-info" type="button">SEND</button>
                                 </span>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
-                </div> -->
+                </div>
             </div>
         </div>
     </div> 

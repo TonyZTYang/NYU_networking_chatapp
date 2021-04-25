@@ -57,7 +57,7 @@ var app = new Vue({
             updatedUsers = [];
             for (var user in response.data.users) {
               if (user == self.myId) {
-                myRoom = response.data.users[user];
+                self.myRoom = response.data.users[user];
               } else {
                 updatedUsers.push({
                   name: user,
@@ -74,7 +74,15 @@ var app = new Vue({
       },
       makeUserRoomChange: function(username) {
         var self = this;
-        
+        axios.post("/makeUserRoomChange", {
+          myName: this.myId,
+          otherName: username
+        })
+        .then(function(response) {
+          if (response.data.status == 1) {
+            console.log("change success");
+          } 
+        })
       }
     }
   })

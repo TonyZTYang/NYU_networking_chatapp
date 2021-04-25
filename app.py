@@ -8,14 +8,15 @@ app = Flask(__name__)
 api = Api(app)
 # parser = reqparse.RequestParser()
 
-users = {"test": 1}
+users = {"test": "1"}
 rooms = {
     "Public": [],
-    1: ["test"]
+    "1": ["test"]
 }
 
 pwd = path.dirname(path.realpath(__file__))
 user_room_change = 0
+next_room = 2
 
 # return the full app
 @app.route('/', methods=['GET'])
@@ -78,8 +79,6 @@ class GetUserRoomChange(Resource):
         if client_urc == user_room_change:
             return {"changed": 0}
         else:
-            print(username)
-            print(client_urc)
             # room = users[username]
             # print(room)
             # room_member = rooms[room]
@@ -87,13 +86,43 @@ class GetUserRoomChange(Resource):
             return {
                 "changed": 1,
                 "server_urc": user_room_change,
-                "users": users,
-                "room": {}
+                "users": users
             }
+class MakeUserRoomChange(Resource):
+    def post(self):
+        global user_room_change
+        global next_room
+        parser = reqparse.RequestParser()
+        parser.add_argument("myName", type=str)
+        parser.add_argument("otherName",type=str)
+        myId = parser.parse_args()["myName"]
+        otherId = parser.parse_args()["otherName"]
+        myRoom = users[myId]
+        otherRoom = users[otherId]
+        user_room_change += 1
+        if myRoom == otherRoom:
+            new_room = str(next_room)
+            next_room += 1
+            rooms[new_room] = [myId, otherId]
+            users[myId] = new_room
+            users[otherId] = new_room
+            rooms[myRoom].remove(myId)
+            rooms[myRoom].remove(otherId)
+            if ((myRoom != "Public") and (rooms[myRoom] == [])):
+                del rooms[myRoom]
+        else:
+            users[myId] = otherRoom
+            rooms[myRoom].remove(myId)
+            rooms[otherRoom].append(myId)
+            if ((myRoom != "Public") and (rooms[myRoom] == [])):
+                del rooms[myRoom]
+        return {"status": 1}
+
 
 api.add_resource(Login,"/login")
 api.add_resource(Logout,"/logout")
 api.add_resource(GetUserRoomChange, "/getUserRoomChange")
+api.add_resource(MakeUserRoomChange, "/makeUserRoomChange")
 
 if __name__ == "__main__":
     app.run("127.0.0.1", 5000, True)
