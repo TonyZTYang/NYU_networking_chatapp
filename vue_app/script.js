@@ -10,7 +10,8 @@ var app = new Vue({
       user_room_change: 0,
       messageChange: 0,
       messages: [],
-      loop: false
+      loop: false,
+      messageInput: ""
     },
     methods: {
       login: function() {
@@ -47,6 +48,7 @@ var app = new Vue({
             self.loop = false;
             self.user_room_change = 0;
             self.messageChange = 0;
+            self.messages = [];
           }
         });
       },
@@ -130,6 +132,19 @@ var app = new Vue({
         if (this.loop) {
           setTimeout(() => {this.getMessageChange()}, 500);
         }
+      },
+      sendMessage: function() {
+        var self = this;
+        axios.post("/sendMessage", {
+          username: this.myId,
+          message: this.messageInput
+        })
+        .then(function(response) {
+          self.messageInput = "";
+          if (response.data.status == 1) {
+            console.log("message sent");
+          }
+        })
       }
     }
   })

@@ -5,8 +5,8 @@
 }
 
 #message-box {
-    height: 700px;
-    max-height: 700px;
+    height: 800px;
+    max-height: 800px;
     overflow-y: scroll;
 }
 #signIn-box {

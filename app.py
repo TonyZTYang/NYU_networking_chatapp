@@ -1,3 +1,4 @@
+from urllib import parse
 from flask import Flask, send_from_directory
 from flask_restful import Resource, Api, reqparse, fields, marshal_with
 from os import path
@@ -20,7 +21,7 @@ rooms = {
 # }
 messages = {
     "Public": [],
-    "1": [[ "2021.04.25 00:00:00", "test",  "hey there"], ["asf", "asdf", "asdf"]]
+    "1": [[ "2021.04.25 00:00:00", "test",  "hey there"]]
 }
 
 pwd = path.dirname(path.realpath(__file__))
@@ -153,6 +154,19 @@ class GetMessageChange(Resource):
                 "messageChange": message_change[room],
                 "messages": messages[room]
             }
+class SendMessage(Resource):
+    def post(self):
+        global message_change
+        parser = reqparse.RequestParser()
+        parser.add_argument("message", type=str)
+        parser.add_argument("username",type=str)
+        msg = parser.parse_args()["message"]
+        username = parser.parse_args()["username"]
+        room = users[username]
+        time = datetime.now().strftime('%Y.%M.%D %H:%M:%S')
+        messages[room].append([time, username, msg])
+        message_change[room] += 1
+        return {"status": 1}
 
 
 api.add_resource(Login,"/login")
@@ -160,6 +174,7 @@ api.add_resource(Logout,"/logout")
 api.add_resource(GetUserRoomChange, "/getUserRoomChange")
 api.add_resource(MakeUserRoomChange, "/makeUserRoomChange")
 api.add_resource(GetMessageChange, "/getMessageChange")
+api.add_resource(SendMessage, "/sendMessage")
 
 if __name__ == "__main__":
     app.run("127.0.0.1", 5000, True)

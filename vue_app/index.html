@@ -17,7 +17,7 @@
             <!-- login box -->
             <div v-if="!loggedIn" class="card-header" id="signIn-box">
                 <div class="input-group">
-                    <input v-model="loginInput" type="text" class="form-control"
+                    <input @keyup.enter="login" v-model="loginInput" type="text" class="form-control"
                         placeholder="Enter Username"/>
                     <span class="input-group-btn">
                         <button @click="login" class="btn btn-primary" type="button">SIGN IN</button>
@@ -54,7 +54,7 @@
                     <div class="card mb-3" style="height:100%;">
                         <div class="card-header text-center text-primary">Room: {{myRoom}}</div>
                         <div class="card-body">
-                            <ul class="list-group list-group-flush pre-scrollable m-0" id="message-list">
+                            <ul class="list-group list-group-flush pre-scrollable" id="message-list">
                                 <!-- message -->
                                 <li v-for="msg in messages" class="list-group-item">
                                     <div class="row">
@@ -66,15 +66,15 @@
                             </ul>
                         </div>
                         <!-- input box -->
-                        <!-- <div class="card-footer">
+                        <div class="card-footer">
                             <div class="input-group">
-                                <input v-model="messageInput" type="text" class="form-control"
-                                    placeholder="Enter Message" maxlength=""/>
+                                <input @keyup.enter="sendMessage" v-model="messageInput" type="text" class="form-control"
+                                    placeholder="Enter Message" maxlength="140"/>
                                 <span class="input-group-btn">
-                                    <button @click="sendMessage" class="btn btn-info" type="button">SEND</button>
+                                    <button @click="sendMessage" class="btn btn-primary" type="button">SEND</button>
                                 </span>
                             </div>
-                        </div> -->
+                        </div>
                     </div>
                 </div>
             </div>
