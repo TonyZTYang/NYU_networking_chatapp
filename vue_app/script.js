@@ -8,6 +8,8 @@ var app = new Vue({
       activeUsers: [],
       loginInput: "",
       user_room_change: 0,
+      messageChange: 0,
+      messages: [],
       loop: false
     },
     methods: {
@@ -25,6 +27,7 @@ var app = new Vue({
             self.myRoom = "Public";
             self.loop = true;
             self.getUserRoomChange();
+            self.getMessageChange();
           } else {
             self.loginAlert = "Duplicated username, please try again."
           }
@@ -42,6 +45,8 @@ var app = new Vue({
             self.myRoom = "";
             self.loggedIn = false;
             self.loop = false;
+            self.user_room_change = 0;
+            self.messageChange = 0;
           }
         });
       },
@@ -57,7 +62,11 @@ var app = new Vue({
             updatedUsers = [];
             for (var user in response.data.users) {
               if (user == self.myId) {
-                self.myRoom = response.data.users[user];
+                if (self.myRoom != response.data.users[user]) {
+                  self.myRoom = response.data.users[user];
+                  self.messageChange = 0
+                }
+                
               } else {
                 updatedUsers.push({
                   name: user,
@@ -83,6 +92,44 @@ var app = new Vue({
             console.log("change success");
           } 
         })
+      },
+      getMessageChange: function() {
+        var self = this;
+        axios.post("/getMessageChange", {
+          username: this.myId,
+          messageChange: this.messageChange
+        })
+        .then(function(response) {
+          if (response.data.changed == 1) {
+            console.log("detect message change")
+            console.log(response.data.messages)
+            self.messageChange = response.data.messageChange;
+            newMessages = [];
+            for (var msg in response.data.messages) {
+              console.log(msg)
+              newMessages.push({
+                time: response.data.messages[msg][0],
+                name: response.data.messages[msg][1],
+                content: response.data.messages[msg][2]
+              })
+            }
+
+            // for (let i = 0; i < self.messageChange; i++) {
+            //   newMessages.push({
+            //     time: response.data.messages[i]["time"],
+            //     name: response.data.messages[i]["name"],
+            //     content: response.data.messages[i]["text"]
+            //   })
+            // }
+            self.messages = newMessages;
+            console.log(newMessages)
+            console.log[self.messages]
+            
+          }
+        });
+        if (this.loop) {
+          setTimeout(() => {this.getMessageChange()}, 500);
+        }
       }
     }
   })
