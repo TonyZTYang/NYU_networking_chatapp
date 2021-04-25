@@ -6,7 +6,9 @@ var app = new Vue({
       myId: "",
       myRoom:"",
       activeUsers: [],
-      loginInput: ""
+      loginInput: "",
+      user_room_change: 0,
+      loop: false
     },
     methods: {
       login: function() {
@@ -21,6 +23,8 @@ var app = new Vue({
             self.loginInput = "";
             self.loggedIn = true;
             self.myRoom = "Public";
+            self.loop = true;
+            self.getUserRoomChange();
           } else {
             self.loginAlert = "Duplicated username, please try again."
           }
@@ -37,8 +41,40 @@ var app = new Vue({
             self.myId = "";
             self.myRoom = "";
             self.loggedIn = false;
+            self.loop = false;
           }
+        });
+      },
+      getUserRoomChange: function() {
+        var self = this;
+        axios.post("/getUserRoomChange", {
+          user_room_change: this.user_room_change,
+          username: this.myId
         })
+        .then(function(response) {
+          if (response.data.changed == 1) {
+            self.user_room_change = response.data.server_urc;
+            updatedUsers = [];
+            for (var user in response.data.users) {
+              if (user == self.myId) {
+                myRoom = response.data.users[user];
+              } else {
+                updatedUsers.push({
+                  name: user,
+                  roomNumber: response.data.users[user] 
+                })
+              }
+            }
+            self.activeUsers = updatedUsers;
+          }
+        });
+        if (this.loop) {
+          setTimeout(() => {this.getUserRoomChange()}, 500);
+        }
+      },
+      makeUserRoomChange: function(username) {
+        var self = this;
+        
       }
     }
   })

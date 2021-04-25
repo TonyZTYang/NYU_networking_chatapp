@@ -1,18 +1,21 @@
 from flask import Flask, send_from_directory
 from flask_restful import Resource, Api,reqparse
 from os import path
+from datetime import datetime
 
 app = Flask(__name__)
 
 api = Api(app)
-parser = reqparse.RequestParser()
+# parser = reqparse.RequestParser()
 
-pwd = path.dirname(path.realpath(__file__))
 users = {"test": 1}
 rooms = {
     "Public": [],
     1: ["test"]
 }
+
+pwd = path.dirname(path.realpath(__file__))
+user_room_change = 0
 
 # return the full app
 @app.route('/', methods=['GET'])
@@ -37,6 +40,8 @@ def stylecss_get():
 
 class Login(Resource):
     def post(self):
+        global user_room_change
+        parser = reqparse.RequestParser()
         parser.add_argument("username",type=str)
         username = parser.parse_args()["username"]
         if username in users.keys():
@@ -44,22 +49,51 @@ class Login(Resource):
         else:
             users[username] = "Public"
             rooms["Public"].append(username)
+            user_room_change += 1
             print("new user " + username)
             return {"status": 1}
 
 class Logout(Resource):
     def post(self):
+        global user_room_change
+        parser = reqparse.RequestParser()
         parser.add_argument("username",type=str)
         username = parser.parse_args()["username"]
         if username in users.keys():
             room = users.pop(username)
             rooms[room].remove(username)
+            user_room_change += 1
             if ((room != "Public") and (rooms[room] == [])):
                 del rooms[room]
             return {"status": 1}
 
+class GetUserRoomChange(Resource):
+    def post(self):
+        global user_room_change
+        parser = reqparse.RequestParser()
+        parser.add_argument("user_room_change", type=int)
+        parser.add_argument("username",type=str)
+        client_urc = parser.parse_args()["user_room_change"]
+        username = parser.parse_args()["username"]
+        if client_urc == user_room_change:
+            return {"changed": 0}
+        else:
+            print(username)
+            print(client_urc)
+            # room = users[username]
+            # print(room)
+            # room_member = rooms[room]
+            # room.remove(username)
+            return {
+                "changed": 1,
+                "server_urc": user_room_change,
+                "users": users,
+                "room": {}
+            }
+
 api.add_resource(Login,"/login")
 api.add_resource(Logout,"/logout")
+api.add_resource(GetUserRoomChange, "/getUserRoomChange")
 
 if __name__ == "__main__":
     app.run("127.0.0.1", 5000, True)
