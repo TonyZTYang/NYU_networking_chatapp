@@ -1,4 +1,4 @@
 # networking_chatapp
-A chat app for Computer Networking course project at NYU Shanghai
+A chat app as course project for NYU Shanghai CSCI-SHU 308 Computer Networking
 
-Tech Used: Vue + Flask + Webrtc
+Tech Used: Vue, Flask and Webrtc
